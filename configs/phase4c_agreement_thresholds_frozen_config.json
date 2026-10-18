@@ -1,0 +1,29 @@
+{
+  "schema_version": "etce-phase4c-agreement-thresholds-v1",
+  "status": "frozen",
+  "definition": {
+    "A_LORE_DT": "mean I[g_LORE(z)=g_DT(z)] on the same held-out Z_x",
+    "A_LORE_BN": "mean I[g_LORE(z)=g_BN(z)] on the same held-out Z_x",
+    "A_DT_BN": "mean I[g_DT(z)=g_BN(z)] on the same held-out Z_x",
+    "A_mean": "(A_LORE_DT + A_LORE_BN + A_DT_BN)/3",
+    "interpretation": "empirical surrogate-output agreement/dependence proxy; not proof of statistical independence"
+  },
+  "threshold_source": "validation_only",
+  "validation_target_count": 1600,
+  "validation_agreement_available_count": 993,
+  "q33": 0.6666666666666666,
+  "q67": 0.8709677419354838,
+  "tier_rule": {
+    "Low": "A <= q33",
+    "Medium": "q33 < A <= q67",
+    "High": "A > q67"
+  },
+  "formal_test_used_to_compute_thresholds": false,
+  "chronology_disclosure": {
+    "numeric_thresholds_computed_after_primary_formal_test_execution": true,
+    "threshold_rule_predeclared_in_experiment_plan": true,
+    "formal_test_values_not_used_to_choose_numeric_thresholds": true
+  },
+  "max_reconstructed_surrogate_fidelity_abs_diff": 0.0,
+  "freeze_rule": "Do not change q33/q67 after formal TEST agreement results are inspected."
+}

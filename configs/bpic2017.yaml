@@ -1,0 +1,21 @@
+{
+  "phase": "1.2",
+  "dataset": "BPIC2017",
+  "raw_path": "data/raw/BPI Challenge 2017.xes.gz",
+  "raw_sha256": "183c5e5189282779c811c78c33ff936351b3dd201165d612211fc220936f8249",
+  "seed": 0,
+  "seed_role": "software reproducibility only; no experiment seed selection",
+  "split": {"ratios": [0.6, 0.2, 0.2], "sort": ["case_start_time", "case_id"], "boundaries": "floor(0.6*N), floor(0.8*N)"},
+  "prefix_candidates": [5, 10, 15, 20, 25, 30],
+  "main_prefix_candidates": [5, 10, 15, 20],
+  "audit_only_prefixes": [25, 30],
+  "final_prefix_endpoints": [5, 10, 15, 20],
+  "endpoint_selection_status": "fixed by Phase 1.2 user instruction; common cohort preferred",
+  "label_task": "benchmark-compatible accepted outcome",
+  "label_definition": "last chronological EventOrigin=Offer event; label only if activity is O_Accepted/O_Refused/O_Cancelled",
+  "label_terminal_activities": ["O_Accepted", "O_Refused", "O_Cancelled"],
+  "label_event_index_base": 1,
+  "prefix_eligibility": "k < label_event_index",
+  "label_gate": "benchmark definition adopted after Phase 1.2 per-case comparison",
+  "bpic2018": "reserved only; no download or implementation"
+}

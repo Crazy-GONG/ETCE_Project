@@ -1,0 +1,150 @@
+{
+  "schema_version": "etce-phase4c-fusion-baselines-frozen-v1",
+  "status": "frozen",
+  "scope": "validation-only parameterization of post-primary-test fusion baselines",
+  "chronology": {
+    "primary_etce_formal_test_already_executed": true,
+    "baseline_protocol_defined_after_primary_test_execution": true,
+    "formal_test_files_read_by_this_script": false,
+    "formal_test_outcomes_used_for_parameter_selection": false,
+    "reporting_requirement": "Describe these fusion baselines as post-hoc comparison protocols parameterized only on validation data; do not claim they were pre-registered before the primary formal TEST."
+  },
+  "common_protocol": {
+    "lambda_for_R": 5.0,
+    "reliability": "R_i = n_i/(n_i+5) * Fid_i",
+    "same_grouping_as_etce": {
+      "stage1": "case_id × model × prefix × surrogate × predicted_class × feature_signature",
+      "stage2": "case_id × model × prefix × predicted_class × feature_signature",
+      "stage3": "case_id × prefix × predicted_class × feature_signature"
+    },
+    "same_stage_order_as_etce": {
+      "stage1": "candidate_id",
+      "stage2": [
+        "LORE",
+        "DT",
+        "BN"
+      ],
+      "stage3": [
+        "RF",
+        "XGBoost",
+        "MLP",
+        "LSTM"
+      ]
+    },
+    "same_fused_rule_re_evaluation_policy": "After a baseline selects one interpretable rule hypothesis for a group, recompute n_r, Fid(r), coverage, and R(r) on the same frozen held-out cache before propagating it to the next hierarchy level.",
+    "candidate_hypothesis_policy": "Non-D-S baselines select from hypotheses already present among the group inputs. They do not synthesize new intersection hypotheses. The ability of D-S to create a supported intersection is therefore part of the method difference, not silently granted to baselines.",
+    "global_tie_break": "higher aggregation score -> higher input R -> more specific rule -> lexical canonical rule",
+    "no_test_side_tuning": true
+  },
+  "validation_selected_sources": {
+    "best_single_surrogate": {
+      "selected": "BN",
+      "selection_rule": "highest validation mean R; tie -> mean Fidelity -> eligible-CF count -> frozen surrogate order"
+    },
+    "best_single_model": {
+      "selected": "XGBoost",
+      "selection_rule": "highest validation mean R; tie -> mean Fidelity -> eligible-CF count -> frozen model order"
+    }
+  },
+  "validation_fixed_weights": {
+    "surrogate_weights": {
+      "LORE": 0.25892080419706587,
+      "DT": 0.36978190436491115,
+      "BN": 0.37129729143802304
+    },
+    "surrogate_weight_basis": "normalized validation mean support-aware reliability R at lambda=5",
+    "model_weights": {
+      "RF": 0.255300904339379,
+      "XGBoost": 0.29404215454741806,
+      "MLP": 0.23667541725829458,
+      "LSTM": 0.21398152385490832
+    },
+    "model_weight_basis": "normalized validation mean support-aware reliability R at lambda=5"
+  },
+  "baselines": {
+    "best_single_evidence": {
+      "status": "enabled",
+      "definition": "Select the input rule with maximum R_i. Tie -> more specific -> lexical canonical rule.",
+      "parameters": {}
+    },
+    "validation_best_source": {
+      "status": "enabled",
+      "definition": "At Stage2 prefer the validation-selected best surrogate when present; at Stage3 prefer the validation-selected best black-box model when present. If absent, fall back to maximum-R input with the global tie-break.",
+      "parameters": {
+        "best_surrogate": "BN",
+        "best_model": "XGBoost"
+      }
+    },
+    "uniform_vote": {
+      "status": "enabled",
+      "definition": "Group inputs by exact canonical rule hypothesis; score(H)=number of input evidence units with hypothesis H. Select maximum score.",
+      "parameters": {}
+    },
+    "validation_weighted_vote": {
+      "status": "enabled",
+      "definition": "Group inputs by exact canonical hypothesis. Stage1 score(H)=sum R_i. Stage2 score(H)=sum[R_i * w_surrogate(i)]. Stage3 score(H)=sum[R_i * w_model(i)].",
+      "parameters": {
+        "surrogate_weights": {
+          "LORE": 0.25892080419706587,
+          "DT": 0.36978190436491115,
+          "BN": 0.37129729143802304
+        },
+        "model_weights": {
+          "RF": 0.255300904339379,
+          "XGBoost": 0.29404215454741806,
+          "MLP": 0.23667541725829458,
+          "LSTM": 0.21398152385490832
+        }
+      }
+    },
+    "fuzzy_probabilistic_or": {
+      "status": "enabled",
+      "definition": "For each exact candidate hypothesis H, each supporting input has membership mu_i=clip(R_i,0,1). Aggregate repeated support with the parameter-free probabilistic fuzzy OR: mu(H)=1-product_i(1-mu_i). Select maximum mu(H).",
+      "parameters": {}
+    },
+    "bayesian_categorical_noise": {
+      "status": "enabled",
+      "definition": "Candidate states are the unique input hypotheses. Use a uniform prior. For M unique hypotheses and evidence i with reliability R_i: P(e_i|H)=R_i if H equals the input hypothesis; otherwise (1-R_i)/(M-1). Compute posterior scores in log space with epsilon guard and select maximum posterior.",
+      "parameters": {
+        "prior": "uniform_over_unique_input_hypotheses",
+        "epsilon": 1e-12
+      }
+    },
+    "probability_averaging": {
+      "status": "not_executable_from_current_canonical_rule_bank",
+      "detected_probability_fields": [],
+      "definition": "Only valid if comparable calibrated surrogate class probabilities exist in the canonical evidence bank. Fid_r, R_r, coverage, and factual black-box probability must NOT be relabeled as surrogate class probabilities."
+    },
+    "ds_etce": {
+      "status": "reference_method_frozen_elsewhere",
+      "config": "configs/phase4c_ds_frozen_config.json",
+      "definition": "Support-aware simple-support BPA with Dempster combination, conflict K, ignorance Theta, deterministic representative-rule selection, and held-out re-evaluation."
+    }
+  },
+  "evaluation": {
+    "primary_scope": "genuinely fusable compatible groups at each hierarchy stage",
+    "primary_metrics": [
+      "Rule Fidelity",
+      "CF Validity",
+      "support",
+      "coverage",
+      "reliability",
+      "min witness edit"
+    ],
+    "stage3_metrics": [
+      "Rule Fidelity",
+      "CF Validity",
+      "model-level CF validity",
+      "all-model CF validity"
+    ],
+    "comparison_requirement": "Use the same validation/test compatibility groups and the same held-out cache for every operator; report counts and matched comparisons."
+  },
+  "provenance": {
+    "canonical_rules_validation_sha256": "331b9ce5a4526aa9e68117c93e3f450890317f896f2a9751104be549a92d1024",
+    "phase4b_validation_sha256": "0461c136b1cda1d5b239a0a57a7c7161072e3126b8d39d66b1020990db14660b",
+    "group_audit_sha256": "62220bf5fb03b77696fd837c2c9751b0df60952dbc42c04700508cf913e54af7",
+    "fusion_cache_validation_sha256": "1458b5ddd02a1293b22e9dae0cab3ef716085459f5ed06471b3a885ede2ff575",
+    "primary_ds_frozen_config_sha256": "3e8be207df624378d41f1fa08fc89f66efcc0dea7f05aa1f0875c942dfcff60b"
+  },
+  "freeze_rule": "After this config is written, baseline formulas, validation-selected source weights, source choices, tie-breaks, and epsilon must not be changed in response to formal TEST baseline results."
+}

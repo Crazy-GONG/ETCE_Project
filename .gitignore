@@ -1,0 +1,61 @@
+# Python caches and environments
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.deps/
+build/
+dist/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Raw, intermediate, and generated experiment data
+/data/
+/results/
+/ETCE_ADAPTIVE_ANALYSIS_INPUT_*/
+
+# Models, checkpoints, caches, and large numerical artifacts
+*.pt
+*.pth
+*.joblib
+*.pkl
+*.pickle
+*.npy
+*.npz
+*.onnx
+*.xes
+*.xes.gz
+
+# Archives and generated logs
+*.zip
+*.rar
+*.tar
+*.tar.gz
+*.tgz
+*.log
+
+# Local secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+credentials*
+secrets*
+
+# Editor and operating-system files
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Internal working material
+/archive/
+/CODEX_*
+/AGENTS.md
+/blackbox_artifact_inventory.txt
+
